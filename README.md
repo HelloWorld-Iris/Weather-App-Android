@@ -1,2 +1,2 @@
-# Weather-App-Android-
+# Weather-App-Android
 Android code of my Weather App
