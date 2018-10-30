@@ -1,5 +1,6 @@
 package com.proj.zyr.db;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,8 +18,8 @@ public class CityDB {
     private static final String CITY_TABLE_NAME="city";
     private SQLiteDatabase db;
 
-    public CityDB(Context context,String path){
-        db=context.openOrCreateDatabase(path,Context.MODE_PRIVATE,null);
+    public CityDB(Context context,String path){//Context是个抽象类，通过类的结构可以看到：Activity、Service、Application都是Context的子类
+        db=context.openOrCreateDatabase(path,Context.MODE_PRIVATE,null);//在这个路径下打开数据库
 
     }
 

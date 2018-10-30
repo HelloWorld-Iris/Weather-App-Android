@@ -15,8 +15,8 @@ public class Netutil {
 
     public static int getNetworkState(Context context) {
 
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);//ConnectivityManager提供了很多接口用于获取系统当前的网络连接信息
+        NetworkInfo networkInfo = connManager.getActiveNetworkInfo();//返回所有网络信息
 
         if (networkInfo == null) {
             return NETWORN_NONE;

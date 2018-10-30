@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.proj.zyr.myweather">
+    <!--允许应用连接网络-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
@@ -13,8 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
+        <!--注册MainActivity-->
         <activity android:name=".MainActivity">
+            <!--intent-filter（意图过滤器），用来存放意图的属性-->
             <intent-filter>
+                <!--android.intent.action.MAIN决定应用程序最先启动，android.intent.category.LAUNCHER决定应用程序是否显示在程序列表里-->
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
