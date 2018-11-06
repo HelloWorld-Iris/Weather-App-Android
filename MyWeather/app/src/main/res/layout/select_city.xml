@@ -45,14 +45,23 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <SearchView
-                android:id="@+id/search_city"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/title_search"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:iconifiedByDefault="false"
-                android:queryHint="搜索内容">
-
-            </SearchView>
+                android:hint="搜索全国城市"
+                android:layout_margin="10dp"
+                android:drawableLeft="@drawable/magnifying_glass"
+                android:drawablePadding="8dp"
+                android:paddingTop="8dp"
+                android:paddingRight="30dp"
+                android:paddingLeft="10dp"
+                android:paddingBottom="8dp"
+                android:singleLine="true"
+                android:background="@drawable/contact_search_box_edittext_keyword_background"
+                android:textColor="#ff000000"
+                android:textColorHint="#ffcccccc"
+                android:textSize="15sp"/>
 
             <ListView
                 android:id="@+id/title_list"

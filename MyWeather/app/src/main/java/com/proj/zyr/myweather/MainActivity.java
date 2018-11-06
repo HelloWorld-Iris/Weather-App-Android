@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener {    
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv,
             temperatureTv, climateTv, windTv, city_name_Tv;  //定义TestView控件
     private ImageView weatherImg, pmImg;
+    private ProgressBar mprogressbar;
 
     private Handler mHandler = new Handler() {  //实例化一个Handler类型的变量，并重写了handleMessage方法
         public void handleMessage(Message msg) {
@@ -61,6 +63,8 @@ public class MainActivity extends Activity implements View.OnClickListener {    
 
         mCityState=(ImageView)findViewById(R.id.title_city_manager);  //选择城市的控件通过id找到所用的图
         mCityState.setOnClickListener(this); //设置监听器为本类
+
+        mprogressbar=(ProgressBar)findViewById(R.id.title_update_bar);
 
         if (Netutil.getNetworkState(this) != Netutil.NETWORN_NONE) {//调用Netutil类查看网络状况
             Log.d("myWeather", "Network OK");
@@ -102,6 +106,16 @@ public class MainActivity extends Activity implements View.OnClickListener {    
 
     }
 
+    void updateBar(boolean update){
+        if(update==true){
+            mprogressbar.setVisibility(View.VISIBLE);
+            mUpdateBtn.setVisibility(View.INVISIBLE);
+        }else if (update==false){
+            mprogressbar.setVisibility(View.INVISIBLE);
+            mUpdateBtn.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void onClick(View view) { //按钮出发后自动调用此方法
 
         if (view.getId()==R.id.title_city_manager){//如果所触发的事件是点击了选择城市的button
@@ -111,6 +125,8 @@ public class MainActivity extends Activity implements View.OnClickListener {    
         }
 
         if (view.getId() == R.id.title_update_btn) {  //如果所触发的事件是点击了更新页面的button
+            boolean update=true;
+            updateBar(update);
             SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);//获得一个SharedPreferences对象，第一个参数为对象文件的名字， 第二个参数为对此对象的操作权限，MODE_PRIVATE权限是指只能够被本应用所读写。
             String cityCode = sharedPreferences.getString("main_city_code", "101010100");//从文件中获取main_city_code的值，如果文件中没有，就直接赋值为后面的101010100
             Log.d("myWeather", cityCode);
@@ -283,5 +299,8 @@ public class MainActivity extends Activity implements View.OnClickListener {    
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力" + todayWeather.getFengli());
         Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
+
+        boolean update=false;
+        updateBar(update);
     }
 }
