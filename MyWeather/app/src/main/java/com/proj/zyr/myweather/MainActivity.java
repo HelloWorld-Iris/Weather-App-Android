@@ -1,18 +1,29 @@
 package com.proj.zyr.myweather;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.Size;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.LocationClient;
+import com.proj.zyr.Adapter.ViewPagerAdapter;
+import com.proj.zyr.LocationListener.MyLocationListener;
 import com.proj.zyr.bean.TodayWeather;
 import com.proj.zyr.util.Netutil;
 
@@ -27,13 +38,35 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
-public class MainActivity extends Activity implements View.OnClickListener {    //构建一个MainActivity类，继承自Activity类，用于与用户交互，
+public class MainActivity extends Activity implements View.OnClickListener,ViewPager.OnPageChangeListener {    //构建一个MainActivity类，继承自Activity类，用于与用户交互，
                                                                                    // 且要实现一个监听器，用来监听按键是否被触发
 
     private static final int UPDATE_TODAY_WEATHER = 1;
 
+    private ViewPagerAdapter vpAdapter;
+    private ViewPager mvp;
+    private List<View> views;
+
+    private ImageView dots[];
+    private int iddot[]={R.id.dot1,R.id.dot2,R.id.dot3};
+
     private ImageView mUpdateBtn; //定义ImageView控件
+    private ImageView mLationBtn;
+
+    private TextView otherweather[];
+    private TextView otherday[];
+    private TextView otherwind[];
+    private TextView otherclimate[];
+    private ImageView otherweaimg[];
+    private int weather[]={R.id.weather,R.id.weather1,R.id.weather2,R.id.weather3,R.id.weather4};
+    private int dat[]={R.id.weekday,R.id.weekday1,R.id.weekday2,R.id.weekday3,R.id.weekday4};
+    private int wind[]={R.id.wind_info,R.id.wind_info1,R.id.wind_info2,R.id.wind_info3,R.id.wind_info4};
+    private int climate[]={R.id.degreeC,R.id.degreeC1,R.id.degreeC2,R.id.degreeC3,R.id.degreeC4};
+    private int weaimg[]={R.id.weather_otherday,R.id.weather_otherday1,R.id.weather_otherday2,R.id.weather_otherday3,R.id.weather_otherday4};
 
     private ImageView mCityState;
 
@@ -41,6 +74,9 @@ public class MainActivity extends Activity implements View.OnClickListener {    
             temperatureTv, climateTv, windTv, city_name_Tv;  //定义TestView控件
     private ImageView weatherImg, pmImg;
     private ProgressBar mprogressbar;
+
+    public LocationClient mLocationClient = null;
+    //private MyLocationListener myListener = new MyLocationListener();
 
     private Handler mHandler = new Handler() {  //实例化一个Handler类型的变量，并重写了handleMessage方法
         public void handleMessage(Message msg) {
@@ -66,6 +102,28 @@ public class MainActivity extends Activity implements View.OnClickListener {    
 
         mprogressbar=(ProgressBar)findViewById(R.id.title_update_bar);
 
+        mLationBtn=(ImageView)findViewById(R.id.title_location);
+
+        mLocationClient=new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(new MyLocationListener());
+        List<String> permissionList=new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!permissionList.isEmpty()){
+            String [] permissions=permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(MainActivity.this,permissions,1);
+        }else {
+            requestLocation();
+        }
+
+
         if (Netutil.getNetworkState(this) != Netutil.NETWORN_NONE) {//调用Netutil类查看网络状况
             Log.d("myWeather", "Network OK");
             Toast.makeText(MainActivity.this, "Network OK!", Toast.LENGTH_LONG).show();
@@ -76,7 +134,64 @@ public class MainActivity extends Activity implements View.OnClickListener {    
 
 
 
+
         initView();
+        initVP();
+        initDots();
+        initFutureWeather();
+    }
+
+    private void initVP(){//用于动态加载viewpager中的视图
+        LayoutInflater inflater=LayoutInflater.from(this);
+        views=new ArrayList<View>();
+        views.add(inflater.inflate(R.layout.vp1,null));
+        views.add(inflater.inflate(R.layout.vp2,null));
+        views.add(inflater.inflate(R.layout.vp3,null));
+        vpAdapter=new ViewPagerAdapter(views,this);
+        mvp=(ViewPager) findViewById(R.id.viewpager);
+        mvp.setAdapter(vpAdapter);
+        mvp.setOnPageChangeListener(this);
+    }
+
+    void initDots(){
+        dots=new ImageView[views.size()];
+        for (int i=0;i<views.size();i++){
+            dots[i]=(ImageView) findViewById(iddot[i]);
+        }
+    }
+
+    void initFutureWeather(){
+        otherweather=new TextView[5];
+        otherday=new TextView[5];
+        otherweaimg=new ImageView[5];
+        otherclimate=new TextView[5];
+        otherwind=new TextView[5];
+        for(int a=0;a<weaimg.length;a++){
+            if(a<=2){
+                otherweather[a]=(TextView)views.get(0).findViewById(weather[a]);
+                otherday[a]=(TextView)views.get(0).findViewById(dat[a]);
+                otherclimate[a]=(TextView)views.get(0).findViewById(climate[a]);
+                otherwind[a]=(TextView)views.get(0).findViewById(wind[a]);
+                otherweaimg[a]=(ImageView)views.get(0).findViewById(weaimg[a]);
+                otherweather[a].setText("N/A");
+                otherday[a].setText("N/A");
+                otherwind[a].setText("N/A");
+                otherclimate[a].setText("N/A");
+
+            }else{
+                otherweather[a]=(TextView)views.get(1).findViewById(weather[a]);
+                otherday[a]=(TextView)views.get(1).findViewById(dat[a]);
+                otherclimate[a]=(TextView)views.get(1).findViewById(climate[a]);
+                otherwind[a]=(TextView)views.get(1).findViewById(wind[a]);
+                otherweaimg[a]=(ImageView)views.get(1).findViewById(weaimg[a]);
+                otherweather[a].setText("N/A");
+                otherday[a].setText("N/A");
+                otherwind[a].setText("N/A");
+                otherclimate[a].setText("N/A");
+            }
+
+
+        }
     }
 
     void initView() {
@@ -93,6 +208,7 @@ public class MainActivity extends Activity implements View.OnClickListener {    
         windTv = (TextView) findViewById(R.id.wind);
         weatherImg = (ImageView) findViewById(R.id.weather_img);
 
+
         city_name_Tv.setText("N/A");
         cityTv.setText("N/A");
         timeTv.setText("N/A");
@@ -104,6 +220,10 @@ public class MainActivity extends Activity implements View.OnClickListener {    
         climateTv.setText("N/A");
         windTv.setText("N/A");
 
+    }
+
+    private void requestLocation(){
+        mLocationClient.start();
     }
 
     void updateBar(boolean update){
@@ -119,6 +239,7 @@ public class MainActivity extends Activity implements View.OnClickListener {    
     public void onClick(View view) { //按钮出发后自动调用此方法
 
         if (view.getId()==R.id.title_city_manager){//如果所触发的事件是点击了选择城市的button
+
             Intent i=new Intent(this,SelectCity.class); //就创建一个Intent用于本类和SelectCity类之间的相互传递信息
             startActivityForResult(i,1); //i用于携带将跳转至下一个界面中使用的数据， 第二个参数：如果> = 0,当Activity结束时requestCode将归还在onActivityResult()中。以便确定返回的数据是从哪个Activity中返回，用来标识目标activity。
              //发起方回收数据
@@ -210,6 +331,13 @@ public class MainActivity extends Activity implements View.OnClickListener {    
         int highCount = 0;
         int lowCount = 0;
         int typeCount = 0;
+        String ffxiang[],fhigh[],flow[],ftype[],fdate[];
+        ffxiang=new String[4];
+        fhigh=new String[4];
+        flow=new String[4];
+        ftype=new String[4];
+        fdate=new String[4];
+
         try {
             XmlPullParserFactory fac = XmlPullParserFactory.newInstance(); //创建生产XML的pull解析器的工厂
             XmlPullParser xmlPullParser = fac.newPullParser(); //使用工厂获取pull解析器
@@ -225,6 +353,7 @@ public class MainActivity extends Activity implements View.OnClickListener {    
                     case XmlPullParser.START_DOCUMENT:
                         break;
                     case XmlPullParser.START_TAG:
+                        Log.d("start","start!!!");
                         if (xmlPullParser.getName().equals("resp")) { //回应？？
                             todayWeather = new TodayWeather();
                         }
@@ -247,32 +376,58 @@ public class MainActivity extends Activity implements View.OnClickListener {    
                             } else if (xmlPullParser.getName().equals("quality")) {
                                 eventType = xmlPullParser.next();
                                 todayWeather.setQuality(xmlPullParser.getText());
-                            } else if (xmlPullParser.getName().equals("fengxiang") && fengxiangCount == 0) {//获取第一次出现fengxiang标签的值
+                            } else if (xmlPullParser.getName().equals("fengxiang") ) {//获取第一次出现fengxiang标签的值
                                 eventType = xmlPullParser.next();
-                                todayWeather.setFengxiang(xmlPullParser.getText());
+                                if(fengxiangCount==0){
+                                    todayWeather.setFengxiang(xmlPullParser.getText());
+                                }else{
+                                    ffxiang[fengliCount-1]=xmlPullParser.getText();
+                                }
                                 fengxiangCount++;
                             } else if (xmlPullParser.getName().equals("fengli")&& fengliCount == 0) {
                                 eventType = xmlPullParser.next();
                                 todayWeather.setFengli(xmlPullParser.getText());
                                 fengliCount++;
-                            } else if (xmlPullParser.getName().equals("date") && dateCount == 0) {
+                            } else if (xmlPullParser.getName().equals("date")) {
                                 eventType = xmlPullParser.next();
-                                todayWeather.setDate(xmlPullParser.getText());
+                                if(dateCount==0){
+                                    todayWeather.setDate(xmlPullParser.getText());
+                                }else{
+                                    fdate[dateCount-1]=xmlPullParser.getText();
+                                }
                                 dateCount++;
-                            } else if (xmlPullParser.getName().equals("high") && highCount == 0) {
+                            } else if (xmlPullParser.getName().equals("high")) {
                                 eventType = xmlPullParser.next();
-                                todayWeather.setHigh(xmlPullParser.getText().substring(2).trim());//substring指截掉首字母起长度为2的字母，trim指去掉空格
+                                if(highCount==0){
+                                    todayWeather.setHigh(xmlPullParser.getText().substring(2).trim());//substring指截掉首字母起长度为2的字母，trim指去掉空格
+                                }else{
+                                    fhigh[highCount-1]=xmlPullParser.getText().substring(2).trim();
+                                }
                                 highCount++;
-                            } else if (xmlPullParser.getName().equals("low") && lowCount == 0) {
+                            } else if (xmlPullParser.getName().equals("low")) {
                                 eventType = xmlPullParser.next();
-                                todayWeather.setLow(xmlPullParser.getText().substring(2).trim());
+                                if(lowCount==0){
+                                    todayWeather.setLow(xmlPullParser.getText().substring(2).trim());
+                                }else{
+                                    flow[lowCount-1]=xmlPullParser.getText().substring(2).trim();
+                                    Log.d("low!!!","ok");
+                                }
                                 lowCount++;
-                            } else if (xmlPullParser.getName().equals("type") && typeCount == 0) {
+                            } else if (xmlPullParser.getName().equals("type")&&typeCount<=8) {
                                 eventType = xmlPullParser.next();
-                                todayWeather.setType(xmlPullParser.getText());
+                                if(typeCount==0){
+                                    todayWeather.setType(xmlPullParser.getText());
+                                }else if(typeCount>=2){
+                                    ftype[(typeCount/2-1)]=xmlPullParser.getText();
+                                }
                                 typeCount++;
                             }
                         }
+                        todayWeather.setFuturefengxiang(ffxiang);
+                        todayWeather.setFuturedate(fdate);
+                        todayWeather.setFuturehigh(fhigh);
+                        todayWeather.setFuturelow(flow);
+                        todayWeather.setFuturetype(ftype);
                         break;
                     case XmlPullParser.END_TAG:
                         break;
@@ -293,14 +448,107 @@ public class MainActivity extends Activity implements View.OnClickListener {    
         timeTv.setText(todayWeather.getUpdatetime() + "发布");
         humidityTv.setText("湿度:" + todayWeather.getShidu());
         pmDataTv.setText(todayWeather.getPm25());
-        pmQualityTv.setText("空气质量"+todayWeather.getQuality());
+        pmQualityTv.setText(todayWeather.getQuality());
         weekTv.setText(todayWeather.getDate());
         temperatureTv.setText(todayWeather.getHigh() + "-" + todayWeather.getLow());
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力" + todayWeather.getFengli());
+
+        String fwind[]=todayWeather.getFuturefengxiang();
+        String fdate[]=todayWeather.getFuturedate();
+        String fhigh[]=todayWeather.getFuturehigh();
+        String flow[]=todayWeather.getFuturelow();
+        String ftype[]=todayWeather.getFuturetype();
+
+        for(int b=0;b<4;b++){
+            otherwind[b].setText(fwind[b]);
+            otherday[b].setText(fdate[b]);
+            otherweather[b].setText(ftype[b]);
+            otherclimate[b].setText(fhigh[b]+"-"+flow[b]);
+
+            if(ftype[b].equals("暴雪"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_baoxue);
+            if(ftype[b].equals("暴雨"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_baoyu);
+            if(ftype[b].equals("大暴雨"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_dabaoyu);
+            if(ftype[b].equals("大雪"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_daxue);
+            if(ftype[b].equals("多云"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_duoyun);
+            if(ftype[b].equals("雷阵雨"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_leizhenyu);
+            if(ftype[b].equals("雷阵雨冰雹"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_leizhenyubingbao);
+            if(ftype[b].equals("晴"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_qing);
+            if(ftype[b].equals("沙尘暴"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_shachenbao);
+            if(ftype[b].equals("特大暴雨"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_tedabaoyu);
+            if(ftype[b].equals("雾"))
+                otherweaimg[b].setImageResource(R.drawable.biz_plugin_weather_wu);
+        }
+
+        if(todayWeather.getPm25()!=null){
+            int pm2_5=Integer.parseInt(todayWeather.getPm25());
+            if(pm2_5<=50)pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
+            if(pm2_5>50&&pm2_5<=100)pmImg.setImageResource(R.drawable.biz_plugin_weather_51_100);
+            if(pm2_5>100&&pm2_5<=150)pmImg.setImageResource(R.drawable.biz_plugin_weather_101_150);
+            if(pm2_5>150&&pm2_5<=200)pmImg.setImageResource(R.drawable.biz_plugin_weather_151_200);
+            if(pm2_5>200&&pm2_5<=300)pmImg.setImageResource(R.drawable.biz_plugin_weather_201_300);
+            if(pm2_5>300)pmImg.setImageResource(R.drawable.biz_plugin_weather_greater_300);
+        }
+
+        String climate=todayWeather.getType();
+        if(climate.equals("暴雪"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoxue);
+        if(climate.equals("暴雨"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_baoyu);
+        if(climate.equals("大暴雨"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_dabaoyu);
+        if(climate.equals("大雪"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_daxue);
+        if(climate.equals("多云"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_duoyun);
+        if(climate.equals("雷阵雨"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_leizhenyu);
+        if(climate.equals("雷阵雨冰雹"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_leizhenyubingbao);
+        if(climate.equals("晴"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
+        if(climate.equals("沙尘暴"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_shachenbao);
+        if(climate.equals("特大暴雨"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_tedabaoyu);
+        if(climate.equals("雾"))
+            weatherImg.setImageResource(R.drawable.biz_plugin_weather_wu);
+
+
         Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
 
         boolean update=false;
         updateBar(update);
+    }
+
+    @Override
+    public void onPageScrolled(int i, float v, int i1) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+        for (int a=0; a<iddot.length;a++){
+            if(a==i){
+                dots[a].setImageResource(R.drawable.page_indicator_focused);
+            }else{
+                dots[a].setImageResource(R.drawable.page_indicator_unfocused);
+            }
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int i) {
+
     }
 }

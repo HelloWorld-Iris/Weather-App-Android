@@ -17,6 +17,13 @@ public class TodayWeather {
     private String low;
     private String type;
 
+    private String[] futurefengxiang;
+    private String[] futuredate;
+    private String[] futurehigh;
+    private String[] futurelow;
+    private String[] futuretype;
+
+
     public String getCity() {
         return city;
     }
@@ -65,6 +72,26 @@ public class TodayWeather {
         return wendu;
     }
 
+    public String[] getFuturedate() {
+        return futuredate;
+    }
+
+    public String[] getFuturefengxiang() {
+        return futurefengxiang;
+    }
+
+    public String[] getFuturehigh() {
+        return futurehigh;
+    }
+
+    public String[] getFuturelow() {
+        return futurelow;
+    }
+
+    public String[] getFuturetype() {
+        return futuretype;
+    }
+
     public void setCity(String city) {
         this.city = city;
     }
@@ -111,6 +138,27 @@ public class TodayWeather {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+
+    public void setFuturefengxiang(String[] futurefengxiang) {
+        this.futurefengxiang = futurefengxiang;
+    }
+
+    public void setFuturedate(String[] futuredate) {
+        this.futuredate = futuredate;
+    }
+
+    public void setFuturehigh(String[] futurehigh) {
+        this.futurehigh = futurehigh;
+    }
+
+    public void setFuturelow(String[] futurelow) {
+        this.futurelow = futurelow;
+    }
+
+    public void setFuturetype(String[] futuretype) {
+        this.futuretype = futuretype;
     }
 
     @Override

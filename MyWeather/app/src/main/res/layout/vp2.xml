@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15sp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/left1">
+        <TextView
+            android:id="@+id/weekday3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="星期"
+            android:textColor="#ffffffff"/>
+        <ImageView
+            android:id="@+id/weather_otherday3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/biz_plugin_weather_qing"/>
+        <TextView
+            android:id="@+id/degreeC3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="摄氏度"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/weather3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="天气"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/wind_info3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="风向"
+            android:textColor="#ffffffff"/>
+
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15sp"
+        android:id="@+id/middle1"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@+id/weekday4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="星期"
+            android:textColor="#ffffffff"/>
+        <ImageView
+            android:id="@+id/weather_otherday4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/biz_plugin_weather_qing"/>
+        <TextView
+            android:id="@+id/degreeC4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="摄氏度"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/weather4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="天气"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/wind_info4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="风向"
+            android:textColor="#ffffffff"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

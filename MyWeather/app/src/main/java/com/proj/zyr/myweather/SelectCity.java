@@ -21,6 +21,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.proj.zyr.Adapter.SearchAdapter;
+import com.proj.zyr.Adapter.cityAdapter;
 import com.proj.zyr.app.MyApplication;
 import com.proj.zyr.bean.City;
 
@@ -38,34 +40,10 @@ public class SelectCity extends Activity implements View.OnClickListener{
     private TextView titleName;
     private ListView mListView;
     private EditText mEdittext;
-    private List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
-    private List<Map<String,Object>> data2=new ArrayList<Map<String, Object>>();
-    private List<Map<String,Object>> searchResult=new ArrayList<Map<String,Object>>();
+    private cityAdapter cityadapter;
+    private SearchAdapter msearchCityAdapter;
+    private List<City> data=new ArrayList<City>();
 
-    TextWatcher mTextWatcher=new TextWatcher() {
-        private CharSequence temp;
-        private int editStart;
-        private int editEnd;
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            //AdapterView<String> aAdapter=new ArrayAdapter<String>(this,R.layout.select_city_item,searchResult);
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            temp=s;
-            if(s.length()==1){
-
-                Log.d("myapp","ontextchanged"+temp);
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            //mEdittext.setOnClickListener(new AdapterView.OnItemClickListener(){});
-
-        }
-    };
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -80,47 +58,63 @@ public class SelectCity extends Activity implements View.OnClickListener{
 
         mEdittext=(EditText)findViewById(R.id.title_search);
 
-        mEdittext.addTextChangedListener(mTextWatcher);
         initViews();
-        initSearch();
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        cityadapter=new cityAdapter(SelectCity.this,R.layout.select_city_item,data);
+
+        mListView.setAdapter(cityadapter);
+
+        mEdittext.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(SelectCity.this,"你单击了"+position,Toast.LENGTH_SHORT).show();
-                Map<String,Object> map=data.get(position);
-                String newcityCode=map.get("number").toString();
-                titleName.setText("当前城市："+map.get("city").toString());
-                Intent i=new Intent();
-                i.putExtra("cityCode",newcityCode); //i中保存cityCode的值为101160101
-                setResult(RESULT_OK,i);//在意图跳转的目的地界面调用这个方法把Activity想要返回的数据返回到主Activity
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                Log.d("chengshi bianma ",newcityCode);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                msearchCityAdapter=new SearchAdapter(SelectCity.this,data);
+                mListView.setTextFilterEnabled(true);
+                if(data.size()<1||TextUtils.isEmpty(s)){
+                    mListView.setAdapter(cityadapter);
+                }else{
+                    mListView.setAdapter(msearchCityAdapter);
+                    msearchCityAdapter.getFilter().filter(s);
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
-//        searchCity.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            //当点击搜索按钮时触发该方法
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-////            }
-//
-//            @Override
-//            //当搜索内容改变时触发该方法
-//            public boolean onQueryTextChange(String newText) {
-//                if (!TextUtils.isEmpty(newText)){
-//                    mListView.setFilterText(newText);
-//
-//                }else{
-//                    mListView.clearTextFilter();
-//                }
-//                return false;
-//            }
-//        });
 
 
 
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                City city;
+                if(msearchCityAdapter!=null){
+                    city=(City) msearchCityAdapter.getItem(position);
+
+                }else{
+                    Toast.makeText(SelectCity.this,"你单击了"+position,Toast.LENGTH_SHORT).show();
+                    city=data.get(position);
+                }
+
+                titleName.setText("当前城市："+city.getCity());
+                Intent i=new Intent();
+                i.putExtra("cityCode",city.getNumber()); //i中保存cityCode的值为101160101
+                setResult(RESULT_OK,i);//在意图跳转的目的地界面调用这个方法把Activity想要返回的数据返回到主Activity
+
+                Log.d("chengshi bianma ",city.getNumber());
+            }
+        });
 
     }
 
@@ -130,52 +124,20 @@ public class SelectCity extends Activity implements View.OnClickListener{
                 //Intent i=new Intent();
                 //i.putExtra("cityCode","101160101"); //i中保存cityCode的值为101160101
                 //setResult(RESULT_OK,i);//在意图跳转的目的地界面调用这个方法把Activity想要返回的数据返回到主Activity
-                finish();
+                finish();//结束当前activity的生命周期
                 break;
             default:
                 break;
         }
     }
 
+
+
     private void initViews(){
         MyApplication myApplication=(MyApplication) getApplication();
-        List<City> cityList=myApplication.getmCityList();
+        data=myApplication.getmCityList();
 
-        for(City city:cityList){   //遍历City类型的数组mCityList，并且把每次遍历的内容赋值给City类型的city中
-            Map<String,Object> item=new HashMap<String, Object>();
-            String cityName=city.getCity();
-            item.put("city",cityName);
-            String cityCode=city.getNumber();
-            item.put("number",cityCode);
-            data.add(item);
-
-
-        }
-        //ArrayAdapter<String> adapter=new ArrayAdapter<String>(myApplication.gentleInstance(),android.R.layout.simple_list_item_1,a);
-        SimpleAdapter adapter=new SimpleAdapter(this,data,R.layout.select_city_item,new String[]{"city"},new int[]{R.id.city_name});
-        mListView.setAdapter(adapter);
     }
 
-    private void initSearch(){
-        MyApplication myApplication=(MyApplication) getApplication();
-        List<City> cityList=myApplication.getmCityList();
-
-        for(City city:cityList){   //遍历City类型的数组mCityList，并且把每次遍历的内容赋值给City类型的city中
-            Map<String,Object> item2=new HashMap<String, Object>();
-            String cityFPY=city.getFirstPY();
-            String cityAFPY=city.getAllFristPY();
-            String cityPY=city.getAllPY();
-            String cityName=city.getCity();
-            item2.put("city",cityName);
-            item2.put("firstPY",cityFPY);
-            item2.put("firstAllPY",cityAFPY);
-            item2.put("AllPY",cityPY);
-            data2.add(item2);
-
-        }
-
-        SimpleAdapter adapter2=new SimpleAdapter(this,data2,R.layout.select_city_item,new String[]{"city","firstPY","firstAllPY","AllPY" },new int[] {R.id.city_name});
-        mListView.setAdapter(adapter2);
-    }
 
 }
