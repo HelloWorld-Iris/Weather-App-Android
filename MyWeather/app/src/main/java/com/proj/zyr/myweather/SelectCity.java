@@ -107,7 +107,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
                     city=(City) msearchCityAdapter.getItem(position);
 
                 }else{
-                    Toast.makeText(SelectCity.this,"你单击了"+position,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(SelectCity.this,"你单击了"+position,Toast.LENGTH_SHORT).show();
                     city=data.get(position);
                 }
 

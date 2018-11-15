@@ -205,10 +205,10 @@ public class MainActivity extends Activity implements View.OnClickListener,ViewP
                 otherclimate[a]=(TextView)views.get(0).findViewById(climate[a]);
                 otherwind[a]=(TextView)views.get(0).findViewById(wind[a]);
                 otherweaimg[a]=(ImageView)views.get(0).findViewById(weaimg[a]);
-                otherweather[a].setText(weatherinfo.getString("futurehigh"+a,"")+"-"+weatherinfo.getString("futurelow"+a,""));
-                otherday[a].setText(weatherinfo.getString("futuredate"+a,""));
-                otherwind[a].setText(weatherinfo.getString("futurefengxiang"+a,""));
-                otherclimate[a].setText(weatherinfo.getString("futuretype"+a,""));
+                otherweather[a].setText(weatherinfo.getString("futurehigh"+a,"0℃")+"-"+weatherinfo.getString("futurelow"+a,"5℃"));
+                otherday[a].setText(weatherinfo.getString("futuredate"+a,"1月1日"));
+                otherwind[a].setText(weatherinfo.getString("futurefengxiang"+a,"北风"));
+                otherclimate[a].setText(weatherinfo.getString("futuretype"+a,"晴"));
                 otherweaimg[a].setImageResource(weatherinfo.getInt("otherweaing"+a,R.drawable.biz_plugin_weather_qing));
 
             }else{
@@ -217,10 +217,10 @@ public class MainActivity extends Activity implements View.OnClickListener,ViewP
                 otherclimate[a]=(TextView)views.get(1).findViewById(climate[a]);
                 otherwind[a]=(TextView)views.get(1).findViewById(wind[a]);
                 otherweaimg[a]=(ImageView)views.get(1).findViewById(weaimg[a]);
-                otherweather[a].setText(weatherinfo.getString("futurehigh"+a,"")+"-"+weatherinfo.getString("futurelow"+a,""));
-                otherday[a].setText(weatherinfo.getString("futuredate"+a,""));
-                otherwind[a].setText(weatherinfo.getString("futurefengxiang"+a,""));
-                otherclimate[a].setText(weatherinfo.getString("futuretype"+a,""));
+                otherweather[a].setText(weatherinfo.getString("futurehigh"+a,"0℃")+"-"+weatherinfo.getString("futurelow"+a,"5℃"));
+                otherday[a].setText(weatherinfo.getString("futuredate"+a,"1月1日"));
+                otherwind[a].setText(weatherinfo.getString("futurefengxiang"+a,"北风"));
+                otherclimate[a].setText(weatherinfo.getString("futuretype"+a,"晴"));
                 otherweaimg[a].setImageResource(weatherinfo.getInt("otherweaing"+a,R.drawable.biz_plugin_weather_qing));
             }
 
@@ -248,16 +248,16 @@ public class MainActivity extends Activity implements View.OnClickListener,ViewP
         weatherImg.setImageResource(id);
         int idpm=weatherinfo.getInt("pmImg",R.drawable.biz_plugin_weather_0_50);
         pmImg.setImageResource(idpm);
-        city_name_Tv.setText(weatherinfo.getString("city","")+"天气");
-        cityTv.setText(weatherinfo.getString("city",""));
-        timeTv.setText(weatherinfo.getString("updatetime",""));
-        humidityTv.setText(weatherinfo.getString("shidu",""));
-        pmDataTv.setText(weatherinfo.getString("pm25",""));
-        weekTv.setText(weatherinfo.getString("date",""));
-        temperatureTv.setText(weatherinfo.getString("high","")+"-"+weatherinfo.getString("low",""));
-        climateTv.setText(weatherinfo.getString("type",""));
-        windTv.setText(weatherinfo.getString("fengli",""));
-        pmQualityTv.setText(weatherinfo.getString("quality",""));
+        city_name_Tv.setText(weatherinfo.getString("city","北京")+"天气");
+        cityTv.setText(weatherinfo.getString("city","北京"));
+        timeTv.setText(weatherinfo.getString("updatetime","7：00"));
+        humidityTv.setText(weatherinfo.getString("shidu","50%"));
+        pmDataTv.setText(weatherinfo.getString("pm25","50"));
+        weekTv.setText(weatherinfo.getString("date","1月1日"));
+        temperatureTv.setText(weatherinfo.getString("high","0℃")+"-"+weatherinfo.getString("low","5℃"));
+        climateTv.setText(weatherinfo.getString("type","晴"));
+        windTv.setText(weatherinfo.getString("fengli","3级"));
+        pmQualityTv.setText(weatherinfo.getString("quality","优"));
 
 
 
@@ -295,9 +295,9 @@ public class MainActivity extends Activity implements View.OnClickListener,ViewP
         if (view.getId() == R.id.title_update_btn) {  //如果所触发的事件是点击了更新页shared面的button
             boolean update=true;
             updateBar(update);
-            SharedPreferences sharedPreferences = getSharedPreferences("", MODE_PRIVATE);//获得一个SharedPreferences对象，第一个参数为对象文件的名字， 第二个参数为对此对象的操作权限，MODE_PRIVATE权限是指只能够被本应用所读写。
-            String city = sharedPreferences.getString("city", "北京");//从文件中获取main_city_code的值，如果文件中没有，就直接赋值为后面的101010100
-            String cityCode=findCityCode(city);
+            //SharedPreferences sharedPreferences = getSharedPreferences("", MODE_PRIVATE);//获得一个SharedPreferences对象，第一个参数为对象文件的名字， 第二个参数为对此对象的操作权限，MODE_PRIVATE权限是指只能够被本应用所读写。
+            //String city = sharedPreferences.getString("city", "北京");//从文件中获取main_city_code的值，如果文件中没有，就直接赋值为后面的101010100
+            String cityCode=findCityCode(city_name_Tv.getText().toString().substring(0,city_name_Tv.getText().toString().length()-2));
             Log.d("myWeather", cityCode);
 
             if (Netutil.getNetworkState(this) != Netutil.NETWORN_NONE) {  //检查网络是否畅通
