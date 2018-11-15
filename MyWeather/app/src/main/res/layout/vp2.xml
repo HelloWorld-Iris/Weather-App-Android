@@ -7,9 +7,61 @@
         android:orientation="vertical" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15sp"
-        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/middle2"
         android:layout_centerVertical="true"
         android:id="@+id/left1">
+        <TextView
+            android:id="@+id/weekday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="星期"
+            android:textColor="#ffffffff"/>
+        <ImageView
+            android:id="@+id/weather_otherday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/biz_plugin_weather_qing"/>
+        <TextView
+            android:id="@+id/degreeC2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="摄氏度"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/weather2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="天气"
+            android:textColor="#ffffffff"/>
+        <TextView
+            android:id="@+id/wind_info2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="风向"
+            android:textColor="#ffffffff"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/middle2"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true">
+
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15sp"
+        android:id="@+id/middle1"
+        android:layout_toRightOf="@id/middle2"
+        android:layout_centerVertical="true">
         <TextView
             android:id="@+id/weekday3"
             android:layout_width="wrap_content"
@@ -39,48 +91,6 @@
             android:textColor="#ffffffff"/>
         <TextView
             android:id="@+id/wind_info3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="风向"
-            android:textColor="#ffffffff"/>
-
-    </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15sp"
-        android:id="@+id/middle1"
-        android:layout_centerInParent="true">
-        <TextView
-            android:id="@+id/weekday4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="星期"
-            android:textColor="#ffffffff"/>
-        <ImageView
-            android:id="@+id/weather_otherday4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/biz_plugin_weather_qing"/>
-        <TextView
-            android:id="@+id/degreeC4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="摄氏度"
-            android:textColor="#ffffffff"/>
-        <TextView
-            android:id="@+id/weather4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="天气"
-            android:textColor="#ffffffff"/>
-        <TextView
-            android:id="@+id/wind_info4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

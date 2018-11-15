@@ -46,6 +46,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
 
 
     protected void onCreate(Bundle savedInstanceState){
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_city); //布局文件为select_city.xml
 
@@ -57,6 +58,9 @@ public class SelectCity extends Activity implements View.OnClickListener{
         mListView=(ListView)findViewById(R.id.title_list);
 
         mEdittext=(EditText)findViewById(R.id.title_search);
+
+        Intent j=getIntent();
+        titleName.setText("当前城市："+j.getStringExtra("cityname"));
 
         initViews();
 
